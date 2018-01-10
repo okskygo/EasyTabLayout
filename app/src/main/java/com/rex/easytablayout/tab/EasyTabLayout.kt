@@ -18,12 +18,51 @@ class EasyTabLayout @JvmOverloads constructor(context: Context, attrs: Attribute
   fun <T : TabSource> setupWithViewPager(viewPager: ViewPager,
                                          fragmentManager: FragmentManager,
                                          factory: TabFactory<T>) {
+    clearOnTabSelectedListeners()
     val tabPagerAdapter = TabPagerAdapter(fragmentManager, factory)
     viewPager.adapter = tabPagerAdapter
     super.setupWithViewPager(viewPager)
     addOnTabSelectedListener(EasyTabLayout.ViewPagerOnTabSelectedListener(viewPager,
         tabPagerAdapter))
     tabPagerAdapter.initCustomTabs(this)
+  }
+
+  fun <T : TabSource> setup(factory: TabFactory<T>) {
+    clearOnTabSelectedListeners()
+    factory.available
+        .map {
+          newTab().apply {
+            when (it) {
+              is TabSource.TextTabSource -> setText(it.title)
+              is TabSource.ImageTabSource -> {
+                setIcon(it.icon)
+                if (it.title != 0) {
+                  setText(it.title)
+                }
+              }
+            }
+          }
+        }
+        .forEachIndexed { index, newTab ->
+          addTab(newTab, index)
+        }
+    addOnTabSelectedListener(OnTabSelectedListener(factory))
+  }
+
+  private class OnTabSelectedListener<T : TabSource>(val factory: TabFactory<T>)
+    : TabLayout.OnTabSelectedListener {
+
+    override fun onTabReselected(tab: Tab?) {
+    }
+
+    override fun onTabUnselected(tab: Tab?) {
+    }
+
+    override fun onTabSelected(tab: Tab?) {
+      val position = tab?.position ?: return
+      val factory = factory as? TTabFactory ?: return
+      factory.onTabSelectedSubject.onNext(factory.available[position])
+    }
   }
 
   private class ViewPagerOnTabSelectedListener<T : TabSource>(viewPager: ViewPager,
@@ -79,11 +118,11 @@ sealed class TabSource {
 
   @get:StringRes
   abstract val title: Int
-  abstract protected val fragmentClass: Class<out Fragment>
+  abstract protected val fragmentClass: Class<out Fragment>?
 
   val fragmentInstance: Fragment? by lazy {
     try {
-      fragmentClass.newInstance()
+      fragmentClass?.newInstance()
     } catch (e: InstantiationException) {
       null
     } catch (e: IllegalAccessException) {

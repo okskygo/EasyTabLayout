@@ -1,0 +1,37 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+>
+
+    <com.rex.easytablayout.tab.EasyTabLayout
+            android:id="@+id/topTabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+    </com.rex.easytablayout.tab.EasyTabLayout>
+
+    <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/topTabLayout"
+            android:layout_above="@+id/bottomTabLayout"
+    />
+
+    <android.support.v4.view.ViewPager
+            android:id="@+id/pager2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+    />
+
+    <com.rex.easytablayout.tab.EasyTabLayout
+            android:id="@+id/bottomTabLayout"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+    </com.rex.easytablayout.tab.EasyTabLayout>
+
+
+</RelativeLayout>
