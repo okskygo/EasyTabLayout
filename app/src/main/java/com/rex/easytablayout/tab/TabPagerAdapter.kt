@@ -26,7 +26,12 @@ class TabPagerAdapter<T : TabSource>(fragmentManager: FragmentManager, val facto
       tabLayout.getTabAt(index)?.apply {
         when (tabSource) {
           is TabSource.TextTabSource -> setText(tabSource.title)
-          is TabSource.ImageTabSource -> setIcon(tabSource.icon)
+          is TabSource.ImageTabSource -> {
+            if (tabSource.title != 0) {
+              setText(tabSource.title)
+            }
+            setIcon(tabSource.icon)
+          }
         }
       }
     }
